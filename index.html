@@ -7,97 +7,101 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-neutral-950 text-neutral-200">
+<body class="bg-neutral-100 text-neutral-900">
 
   <section class="max-w-3xl mx-auto py-20 px-6 text-center">
     <h1 class="text-4xl font-bold mb-3">Nordin Schoenmakers</h1>
-    <p class="text-lg text-neutral-400 mb-6">
-      Backend-Focused Web Developer — Python, Django, DRF, SQL
+    <p class="text-lg text-neutral-600 mb-6">
+      Full-Stack Web Developer — Python, Django, DRF, SQL, React
     </p>
 
-    <p class="text-neutral-400 leading-relaxed max-w-xl mx-auto">
-        I'm a self taught but passionate Web Developer with focus on quality, reliability and maintainability.
-        I build full stack projects end to end using tools like Python, Django/DRF, SQL, React, and deployment tools such as Docker and nginx
+    <p class="text-neutral-800 leading-relaxed max-w-xl mx-auto text-lg">
+      I'm a passionate Full Stack Web Developer with focus on quality, reliability and maintainability.
+      I build full stack projects end to end using tools like Python, Django/DRF, SQL, React, and deployment tools such as Docker and nginx
     </p>
 
     <div class="flex justify-center gap-4 mt-8">
       <a target="_blank" href="https://github.com/NordinCoding" 
-         class="px-4 py-2 bg-neutral-800 rounded hover:bg-neutral-700 transition">
+         class="px-4 py-2 bg-neutral-300 rounded hover:bg-neutral-400 transition hover:scale-105 shadow-md">
         GitHub
       </a>
 
-      <a target="_blank" href="static/cv.pdf" 
-         class="px-4 py-2 border border-neutral-700 rounded hover:bg-neutral-800 transition">
-        Resume
+      <a target="_blank" href="static/resume_nl.pdf" 
+         class="px-4 py-2 border border-neutral-300 rounded bg-neutral-100 hover:bg-neutral-200 transition shadow-md">
+        Resume Dutch
+      </a>
+      <a target="_blank" href="static/resume_en.pdf" 
+         class="px-4 py-2 border border-neutral-300 rounded bg-neutral-100 hover:bg-neutral-200 transition shadow-md">
+        Resume English
       </a>
     </div>
   </section>
 
-  <div class="border-t border-neutral-800 my-10"></div>
+  <div class="border-t border-neutral-300 my-10"></div>
 
   <section class="max-w-4xl mx-auto px-6">
     <h2 class="text-3xl font-semibold mb-6">Featured Project | Stocker</h2>
 
     <img src="static/images/stocker.png"
          alt="Stocker Screenshot"
-         class="rounded-lg mb-6 border border-neutral-800">
+         class="rounded-lg mb-6 border border-neutral-400 shadow-md">
 
-    <p class="text-neutral-300 mb-4">
-      A real-time stock tracking application using the Django REST Framework for the API, Finnhub's WebSocket
+    <p class="text-neutral-800 mb-4">
+      A real-time stock tracking application using Django REST Framework for the API, Finnhub's WebSocket
       for live market updates, Celery/Redis for scheduled API requests, PostgreSQL for database, a React frontend with a market dashboard style,
       all deployed on a VPS using Docker and nginx.
     </p>
 
     <h3 class="text-xl font-medium mt-6 mb-2">Tech Stack</h3>
-    <p class="text-neutral-400 mb-4">
+    <p class="text-neutral-800 mb-4">
       Django, Django REST Framework, Finnhub API WebSocket, PostgreSQL, Celery/Redis, React, TailwindCSS, Chart.js, Docker, nginx
     </p>
 
     <h3 class="text-xl font-medium mb-2">Architecture Overview</h3>
-    <p class="text-neutral-400 leading-relaxed mb-6">
-        The core of the project is the Django REST API which uses scheduled tasks to populate the database
-        with intraday & EOD market data which the React consumes to generate line graphs. It also connects to 
-        Finnhub's websocket which streams real-time market data into my Django API which then streams it to 
-        the React frontend to display real-time market data.
+    <p class="text-neutral-800 leading-relaxed mb-6">
+      The core of the project is the Django REST API which uses scheduled tasks to populate the database
+      with intraday & EOD market data which the React App consumes to generate line graphs. The Django API is connected
+      to Finnhub's websocket where it then streams the data into the React App using Django Channels
+      for real-time market data display.
     </p>
 
     <div class="flex gap-4 mt-4">
       <a target="_blank" href="https://nordinsprojects.site/stocker/"
-         class="px-4 py-2 bg-neutral-800 rounded hover:bg-neutral-700 transition">
+         class="px-4 py-2 bg-neutral-300 rounded hover:bg-neutral-400 hover:scale-105 transition shadow-md">
         Live Demo
       </a>
 
       <a target="_blank" href="https://github.com/NordinCoding/Stocker"
-         class="px-4 py-2 border border-neutral-700 rounded hover:bg-neutral-800 transition">
+         class="px-4 py-2 border border-neutral-300 rounded bg-neutral-100 hover:bg-neutral-200 transition shadow-md">
         GitHub Repo
       </a>
     </div>
   </section>
 
-  <div class="border-t border-neutral-800 my-10"></div>
+  <div class="border-t border-neutral-300 my-10"></div>
 
   <section class="max-w-4xl mx-auto px-6 mb-16">
     <h2 class="text-2xl font-semibold mb-4">Previous Project | Discount Checker </h2>
 
-    <p class="text-neutral-400 mb-4">
-        A web app built using Flask that allowed users to track products from supported webshops
-        using a custom webscraping API built using FastAPI, Playwright and rotating residential proxies.
-        It automatically rescraped each product users were tracking to check for discounts.
-        <br></br>
-        The project ran uninterrupted for months but I have taken it offline due to high server costs.
+    <p class="text-neutral-800 mb-4">
+      A web app built using Flask that allowed users to track products from supported webshops
+      using a custom webscraping API built using FastAPI, Playwright and rotating residential proxies.
+      <br></br>
+      The project ran uninterrupted for months but I have taken it offline due to high server costs.
     </p>
 
     <div>
         <img src="static/images/discountchecker2.png"
             alt="Discount Checker Screenshot"
-            class="w-full h-auto rounded-lg border border-neutral-800">
+            class="w-full h-auto rounded-lg border border-neutral-300">
     </div>
 
     <a target="_blank" href="discountchecker.html"
-       class="inline-block mt-6 text-neutral-400 hover:text-neutral-200 underline">
+       class="inline-block mt-6 text-neutral-600 hover:text-neutral-900 underline">
       View Technical Breakdown →
     </a>
   </section>
 
 </body>
 </html>
+
