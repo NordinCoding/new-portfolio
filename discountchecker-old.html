@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <link href="static/css/main.css" rel="stylesheet">
+</head>
+<body>
+        <section class="stage b" id="stage-2">
+
+            <div>
+                <div class="project-div">
+                    <H1 class="project-header" id="title-header">Discount Checker</H1>
+                    <p class="project-paragraph">
+                        Discount Checker is a project I originally created as my CS50x final project.
+                        That version was very simple, could only run locally and was more like a proof of concept.
+                        What it has become is a full stack, production grade project built from scratch.
+                    </p>
+                    
+                    <h1 class="project-header">What does Discount Checker do?</h1>
+                    <p class="project-paragraph" id="border-p">
+                        The goal of Discount Checker is to have all the products you want from different webshops in one place.
+                        You won't need to check 5 different websites to check if the product you want is on sale,
+                        you can simply check one website and see all your products in one place.
+                    </p>
+                </div>
+            </div>
+
+            <div class="website-image-div">
+                <img class="website-img" src="static/images/website-2.png">
+            </div>
+
+            <div class="project-div-2">
+                <div class="how-div">
+                    <h1 class="project-header-2">How was it made?</h1>
+                    <p class="project-paragraph-2">
+                        Discount Checker is a web application built in Python using tools such as Flask for the back-end, SQLAlchemy for the ORM, <br>Celery/RedisMQ for rate limiting and task scheduling.
+                        It is deployed using Docker, nginx and waitress.
+                        It uses a custom built web scraping API built using FastAPI,<Br> Playwright for headless browser, a rotating residential proxy against bot detection and nginx and gunicorn for deployment.
+                    </p>
+                </div>
+                <div class="repo-div">
+                    <div class="repo-button-div">
+                        <div class="git-div">
+                            <h1 class="title-header">Flask app</h1>
+                            <a target="_blank" href="https://github.com/NordinCoding/discountChecker">
+                                <button class="git-button"><img class="git-logo" src="static/images/github.png"></button>
+                            </a>
+                        </div>
+                        <div class="git-div">
+                            <h1 class="title-header">Web Scraper API</h1>
+                            <a target="_blank" href="https://github.com/NordinCoding/fastAPI/tree/main/fastAPI">
+                                <button class="git-button"><img class="git-logo" src="static/images/github.png"></button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                
+            
+        </section>
+
+        <section class="stage c" id="stage-3">
+            <div class="title" id="stage-3-title">
+                <div class="bottom-border">
+                    <H1>Code</H1>
+                </div>
+            </div>
+            <div id="stage-3-div">
+                <div class="code-segment">
+                    <h1>Standardising URLs</h1>
+                    <p class="p-3" id="standardise-text">
+                        I very quickly figured out how complex rescraping a product database can be due to differences in user input but also due to inconsistencies in URLs.<br>
+                        To combat this, I standardise all my URLs and remove their inconsistent trailing data before entering them into the database.
+                    </p>
+                    <div class="code-block-div-wrapper">
+                        <div class="code-block-div" id="standardise-div">
+                            <div>
+                                <img class="code-snippet" src="static/images/standardise_url.png">
+                            </div>
+                            <div class="drawer-div closed">
+                                <div class="explanation-div">
+                                    <div>
+                                        <p id="standardise-1">
+                                            Clean up URL.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p id="standardise-2">
+                                            Bol.com URLs use a pattern of "/?"<br> before trailing data.
+                                            If it exists,<br> I use the index of "/?" to slice off the<br> trailing data.
+                                        </p>
+                                    </div>
+                                    <div id="standardise-3-div">
+                                        <p id="standardise-3">
+                                            I standardise all URLs so my deduplication<br> logic stays consistent.
+                                            I do this by<br> adding "https://www." if the URL <br>doesn't already include it.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="expand-div">
+                                    <h3>Explanation</h3>
+                                    <div class="expand-arrow-div">
+                                        <img class="expand-arrow" src="static/images/arrow.png">
+                                    </div>
+                                </div>
+                                <div class="expand-div">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="index-snippet">
+                        This snippet is from 
+                        <a class="code-href" target="_blank" href="https://github.com/NordinCoding/discountChecker/blob/main/modules/functions.py#L69">
+                            functions.py
+                        </a> 
+                        in line 69
+                    </h3>
+
+                    <div id="deduplication-div">
+                        <h1>Preventing duplicates in the Database</h1>
+                        <p class="p-3">
+                            There is a possibility that multiple users will want the same product in their table. To account for this I added deduplication logic,<br> 
+                            not only does this speed up the request time because it pulls data straight from the database, but it also saves resources by not having to request the API.
+                        </p>
+                        <h3>The deduplication logic:</h3>
+                        <div class="pre-block-div">
+                            <pre class="pre-block"><samp>
+                                Is the requested product already in the databases products table?
+                                    <b class="pseudo-b">if it is:</b>
+                                        Check if the product also exists in the userProducts table for the current userID
+                                        
+                                        <b class="pseudo-b">if it is:</b>
+                                            Alert the user that the product is already in their table and don't add it
+                                        <b class="pseudo-b">else:</b>
+                                            Add the product to userProducts with the existing productID and userID
+                                    <b class="pseudo-b">else:</b>
+                                        Request the API and add the product data to the products and userProducts tables
+                            </samp></pre>
+                        </div>
+                        <h3 class="index-snippet">
+                            To see the code, look at the "/add_product" route in: 
+                            <a class="code-href" target="_blank" href="https://github.com/NordinCoding/discountChecker/blob/main/app.py#L179">
+                                app.py
+                            </a> on line 179
+                        </h3>
+                    </div>
+
+
+                </div>
+                <div class="code-segment-2">
+                    <div class="title">
+                        <h4>Data Flow</h4>
+                    </div>
+                    <div id="data-flow-div">
+                        <div class="data-chart-div">
+                            <div class="data-box flow-text box-width">
+                                <h3>User input</h3>
+                            </div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="data-box flow-text box-width">
+                                <h3>Web Server Back-end Validation</h3>
+                            </div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="data-box flow-text box-width">
+                                <h3>API Request</h3>
+                            </div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="data-box flow-text box-width">
+                                <h3>Celery Task Queue</h3>
+                            </div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="data-box flow-text box-width">
+                                <h3>API Response</h3>
+                            </div>
+
+                            <div class="horizontal-flow">
+                                <div class="vertical-flow">
+                                    <div class="flow-arrow">↓</div>
+                                    <div class="data-box flow-text extra-box-width">
+                                        <h3>Database Storage</h3>
+                                    </div>
+                                </div>
+                                <div class="vertical-flow">
+                                    <div class="flow-arrow">↓</div>
+                                    <div class="data-box flow-text extra-box-width">
+                                        <h3>Front-end Table Display</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-chart-div-2">
+                            <div class="data-box box-width-2">
+                                <p class="flow-text ">Input in the form of a URL</p>
+                            </div>
+                            <div class="flow-arrow-2">↓</div>
+                            <div class="data-box box-width-2">
+                                <p class="flow-text ">
+                                    Back-end checks if the URL is from a supported website
+                                </p>
+                            </div>
+                            <div class="flow-arrow-2">↓</div>
+                            <div class="data-box box-width-2">
+                                <p class="flow-text ">
+                                    Web server calls the request_API( ) Celery task
+                                </p>
+                            </div>
+                            <div class="flow-arrow-2">↓</div>
+                            <div class="data-box box-width-2">
+                                <p class="flow-text ">
+                                    Request enters Queue with a concurrency of 1<br>
+                                    to not overload the API server
+                                </p>
+                            </div>
+                            <div class="flow-arrow-2">↓</div>
+                            <div class="data-box box-width-2">
+                                <p class="flow-text ">
+                                    Web Server receives the product data from the <Br>
+                                    API In the form of a dictionary
+                                </p>
+                            </div>
+                            <div class="horizontal-flow">
+                                <div class="vertical-flow">
+                                    <div class="flow-arrow-2">↓</div>
+                                    <div class="data-box extra-box-width-2">
+                                        <p class="flow-text">
+                                            Product data gets stored in the databases products and userProducts tables
+                                            
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="vertical-flow">
+                                    <div class="flow-arrow-2">↓</div>
+                                    <div class="data-box extra-box-width-2">
+                                        <p class="flow-text">
+                                            Front-end gets the product data from the Back-end and displays it for the user
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+                <div class="break-border">
+                    <div class="border-break">
+                </div>
+            </div>
+            <div class="stage-3-5">
+                <div class="js-segment">
+                    <h1>Handling an empty product table</h1>
+                    <p class="p-3">I really didn't like how the product table looked when it was empty, so I decided to add a message when the table is empty.</p>
+                    <div class="empty-table-img-div">
+                        <div class="table-img-div">
+                            <img id="empty-table-img-1" src="static/images/empty_table_2.png">
+                            <h3 class="index-snippet">
+                                This snippet is from 
+                                <a class="code-href" target="_blank" href="https://github.com/NordinCoding/discountChecker/blob/main/templates/index.html#L142">
+                                    index.html
+                                </a> 
+                                in line 142
+                            </h3>
+                            <p class="p-3 empty-table-p">
+                                This function checks for an empty table on page load.<Br>
+                                checkRows is a simple function that checks for the amount <br>
+                                of rows currently in the users table.
+                            </p>
+                            <p class="p-3 empty-table-p">
+                                if the amount of current rows is 0, <br> 
+                                the <b>emptyTableMessage( )</b> function creates a new row <br>
+                                for the table and shows a simple message instructing<br> 
+                                the user on how to add a product.
+                            </p>
+                            <p class="p-3 empty-table-p">
+                                When a product is removed the same process happens,<br>
+                                it will check for the amount of current rows and<br>
+                                if that amount is 0, it will add the empty Table Message.
+                            </p>
+                        </div>
+                        <div class="table-img-div">
+                            <img id="empty-table-img-2" src="static/images/empty_table.png">
+                            <h3 class="index-snippet">
+                                This snippet is from 
+                                <a class="code-href" target="_blank" href="https://github.com/NordinCoding/discountChecker/blob/main/static/js/main.js#L165">
+                                    main.js
+                                </a> 
+                                in line 165
+                            </h3>
+                        </div>
+                    </div>
+                    <h1>Handling real-time user input</h1>
+                    <div class="user-input-text">
+                        <p class="p-3">
+                            Only sending valid URLs to my API is incredibly important,
+                            not just to prevent crashes but also to save unnecessary costs.
+                            To do this I simply check if a supported domain is in the requested URL,
+                            If it is I send it to the API, if its not I give the user
+                            a clear feedback message asking for a valid URL.
+                        </p>
+                    </div>
+                    <div class="user-input-div">
+                        <div>
+                            <div class="feedback-image-div">
+                                <img class="feedback-image" src="static/images/feedback.png">
+                                    <h3 class="index-snippet">
+                                        This snippet is from 
+                                        <a class="code-href" target="_blank" 
+                                            href="https://github.com/NordinCoding/discountChecker/blob/main/templates/index.html#L98">
+                                            index.html
+                                        </a> 
+                                        in line 98
+                                    </h3>
+                            </div>
+                            <div class="user-input-text-2">
+                                <p class="p-3">
+                                    I personally believe providing clear feedback to the user is vital for a good user experience.
+                                    To provide this I have a feedback message system that gives the user feedback based on the situation.
+                                </p>
+                                <p class="p-3">
+                                    For example during a user request I disable the submit button, show a loading spinner
+                                    and the text "Getting product data...". After the request finishes,
+                                    they get feedback about whether the request was successful or not and the button gets re-enabled.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="fadeout-image-div">
+                            <div>
+                                <img class="fadeout-image" src="static/images/fade_out.png">
+                                    <h3 class="index-snippet">
+                                        This snippet is from 
+                                        <a class="code-href" target="_blank" 
+                                            href="https://github.com/NordinCoding/discountChecker/blob/main/static/js/main.js#L24">
+                                            main.js
+                                        </a> 
+                                        in line 24
+                                    </h3>
+                            </div>
+                            <div class="fadeout-text-div">
+                                <p class="p-3 fadeout-p">
+                                    The <b>fadeOut()</b> function you see here gets called after the feedback message is shown.
+                                </p>
+                                <p class="p-3 fadeout-p">
+                                    It takes the div of the feedback message(messageDiv) and the button used to submit(submitButton)
+                                    as arguments. 
+                                </p>
+                                <p class="p-3 fadeout-p">
+                                    Once called, It immediately disables the button to prevent spam abuse, waits 3 seconds due to setTimeout,
+                                    set opacity to 0 to make it fade out, waits 1 more second, removes the contents of the messageDiv
+                                    and re-enable the button so the user can make their next request.
+                                </p>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="webscraper-segment">
+                    <div class="title-scraping">
+                        <h1>Web scraping</h1>
+                        <p>
+                            Initally for the CS50x version of Discount Checker I used BeautifulSoup4. 
+                            As good as BS4 is for basic scraping, I immediately ran into an issue when 
+                            upgrading this project. If the accept cookies pop up appeared, 
+                            it would block the page HTML with a JS script.
+                            To fix this problem I did some research and found out headless browsers exist, 
+                            the ones I found were Playwright and Selenium, I went with playwright because 
+                            it's more modern, it's asynchronous and it has amazing documentation.
+                        </p>
+                    </div>
+
+
+                    <h1>Scraping Bol.com</h1>
+                    <div class="bot-detection-div">
+                        <h3>Bot detection</h3>
+                            <p class="p-3">
+                                Bol.com has consistent and clean HTML, 
+                                this made scraping the website in development super easy.
+                                But when trying it out on a VPS it immediately stopped working 
+                                due to bot detection, this led to a 3 week long battle against the bot detection
+                                where I used different browser argument, different browsers,
+                                random pauses to imitate user action and residential proxies.
+                            </p>
+                            <p class="p-3">
+                                What ended up working was a combination, I found a community created upgrade 
+                                to Playwright called Patchright which helped against bot detection, 
+                                but that wasn't enough, what ended up making it consistent was a 
+                                rotating residential proxy from Oxylabs. The combination of Patchright, 
+                                browser arguments, random pauses and the proxies are what led me 
+                                to a very conistent scraper.
+                            </p>
+                    </div>
+                    <div class="product-data-div">
+                        <h3>Getting the product data</h3>
+                            <p class="p-3">
+                                When it comes to gathering the product data itsself, its very simple due to the consistent and clean HTML that Bol.com uses.<br>
+                            </p>
+                            <div class="bol-img-div">
+                                <div class="generic-img-div">
+                                    <img class="bol-img1" src="static/images/bol_scraper1.png">
+                                    <h3 class="index-snippet">
+                                        This snippet is from 
+                                        <a class="code-href" target="_blank" 
+                                            href="https://github.com/NordinCoding/fastAPI/blob/main/fastAPI/mainPlay.py#L117">
+                                            mainPlay.py
+                                        </a> 
+                                        in line 117
+                                    </h3>
+                                </div>
+                                <div class="generic-img-div">
+                                    <img class="bol-img2" src="static/images/bolprice.png">
+                                    <h3 class="index-snippet">
+                                        Bol.com pricing
+                                    </h3>
+                                </div>
+                            </div>
+                            <p class="p-3">
+                                For example, in this code snippet here, all it does is check if the element 
+                                of the original price exists(<b>"h-nowrap"</b>), 
+                                If this doesn't exist, this means the product is not on sale 
+                                and I set both prices to the standard price found.
+                                However if it does exist, this means the product is on sale and has 2 values, 
+                                the original price and the current price(<b>see image for example</b>).
+                                To find the original price I locate the element using the same class I used to check 
+                                for existence, get the inner HTML, clean up the data and return it.
+                            </p>
+                            <p class="p-3">
+                                The accept cookies and language selection pop up that Bol.com has doesn't always pop up due to my scraper storing session data.
+                                This helps the scraper be slightly faster due to not having to wait for the buttons to load and it won't have to click them.
+                                When the scraper returns an error however, I always delete the session data just to be safe.
+                            </p>
+                    </div>
+                    <div class="mediamarkt-div">
+                        <h1>
+                            Scraping Mediamarkt
+                        </h1>
+                        <p class="p-3">
+                            Scraping Mediamarkt couldn't have been more different. Instead of the bot detection being the challenge,
+                            the scraping of the product data was the challenge.
+                        </p>
+                        <p class="p-3">
+                            I used the same anti bot detection strategy that I used for Bol.com, which worked perfectly.
+                            But I quickly found out Mediamarkts HTML is very messy, not only was it very bloated,
+                            but it uses randomly generated class names that are re used often and change regularly
+                            which makes them impossible to use for consistent scraping.
+                        </p>
+                        <p class="p-3">
+                            After a few days of my scraper constantly breaking due to these class names,
+                            I started to look for a different approach which led me to find their "data-test" values.
+                            Their "data-test" values were used in the parent elements of the pricing elements, 
+                            never change and are not re used, so I use them instead of the classes for consistent scraping.
+                        </p>
+                        <h3>Extracting Original Price</h3>
+                        <div class="mediamarkt-scraper-div">
+                            <div class="mediamarkt-img1-div">
+                                <img class="mediamarkt-img1" src="static/images/mediamarkt_scraper1.png">
+                                <h3 class="index-snippet">
+                                    This snippet is from 
+                                    <a class="code-href" target="_blank" 
+                                        href="https://github.com/NordinCoding/fastAPI/blob/main/fastAPI/mainPlay.py#L465">
+                                        mainPlay.py
+                                    </a> 
+                                    in line 465
+                                </h3>
+                            </div>
+                            <div class="mediamarkt-text-div">
+                                <p class="p-3 mediamarkt-p">
+                                    This example showcases the way I extract the Original Price, as you can see its much different than with Bol.com.
+                                    the first part is the same, I check if the Original Price elememt exists, if not I set it to the Current Price.
+                                </p>
+                                <p class="p-3 mediamarkt-p">
+                                    To actually get the content of the Original Price element, I first have to get all the content
+                                    that's stored in the parent element with the data-test value, I sift through this content with a simple loop to find
+                                    which element has the HTML that includes a <b>"€"</b>, once found I strip the whitespace and store it
+                                    in the ogPrice_html variable.
+                                </p>
+                                <p class="p-3 mediamarkt-p">
+                                    Once the price is found, it has to be cleaned up before it gets sent back to my flask app, to do this I used regex.
+                                    The split method is used because the original p element holds the original price value twice, so i split it and take the last one
+                                    in the list because this is always the one that's correctly formatted.
+                                </p>
+                            </div>
+                        </div>
+                        <p class="p-3 mediamarkt-p">
+                            For example, a product with the original price of <b>"1099,–"</b>, will give me the content value of <b>"€1099.€1099.00"</b>.
+                            which if split and taken the -1 index of, leaves the value <b>"1099.00"</b> which my Flask app expects.
+                        </p>
+                    </div>
+                </div>
+                <div class="break-border2">
+                    <div class="border-break2">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stage d" id="stage-4">
+            <div class="title" id="stage-4-title">
+                <div class="bottom-border-4">
+                    <H1>System</H1>
+                </div>
+            </div>
+            
+            <div class="stage-4-flexbox">
+                <div class="stage-4-left">
+                    <div class="separation-div">
+                        <h1>Separation of concerns between Flask app and API</h1>
+                        <p class="p-3 p-system">
+                            My project uses 2 servers, both sersvers are shared VPS instances. The server running the Flask web app is very lightweight and only has 2 vCPU cores due to very low resource requirements. The other server is solely used for the API
+                            and has 6 vCPU cores which is the minimum requirement needed to handle both user requests and scheduled requests simultaneously. 
+                        </p>
+                        <p class="p-3 p-system">
+                            Keeping them separate avoids dependency bloat, simplifies resource management and keeps each environment easier to maintain. Keeping them separate also makes them easier to debug and they can't slow each other down.
+                        </p>
+                    </div>
+
+                    <div class="api-div">
+                        <h1>Dual API Setup</h1>
+                        <p class="p-3 p-system">
+                            When I first built the webscraper API the only request type was user requests, this worked perfectly on a single API. When I implemented the scheduled rescrape and sent the scheduled requests to the same singular API 
+                            while a user request was already being handled I immediately ran into a problem, I got the error message that there was 'no browser instance'. 
+                        </p>
+                        <p class="p-3 p-system">
+                            After some research and testing I figured out that due to the API
+                            already being in use, it could not create another browser instance. To solve this issue, I created an almost identical API to run parallel to the first API, I named these APIs user_scraper and scheduled_scraper respectively.
+                            Due to this dual API setup, user requests and scheduled requests are handled on the same server, but on different APIs which means they will never interfere with each other.
+                        </p>
+                        <p class="p-3 p-system-green">
+                            Since I designed this setup, I have learned about browser pools in Playwright, however I still believe this Dual API setup is beneficial because it separates the concerns and allows for more control. If I were to implement browser pools
+                            I can control how many browser instances each API can have.
+                            <br><br>
+                            For example, the scheduled rescrape doesn't need super high speeds because its a background job that users don't see, so with a high user base I could give the user_scraper API 5 browsers in a pool
+                            and the scheduled_scraper API 3 browsers, this control wouldn't be as smooth and separated if all requests went to the same API.
+                        </p>
+                    </div>
+
+                    <div class="retry-div">
+                        <h1>User request handling vs Scheduled Request handling</h1>
+                        <p class="p-3 p-system">
+                            Both request types are handled differently. User requests are unpredictable and messy, To handle this, the input is cleaned and validated (as explained in the Code section), the user expects feedback so the Flask back end has to
+                            receive errors and respond to them appropriately. Scheduled requests are very different, from the start the data it uses is already cleaned up and straight from the database so requests can be sent without worry, however my scheduled rescrape system
+                            has retry logic.
+                        </p>
+                        <div class="retry-img-div">
+                            <div>
+                                <img class="retry-img" src="static/images/retry.png">
+                                <h3 class="index-snippet">
+                                    This snippet is from 
+                                    <a class="code-href-stage4" target="_blank" 
+                                        href="https://github.com/NordinCoding/discountChecker/blob/main/modules/functions.py#L145">
+                                        functions.py
+                                    </a> 
+                                    in line 145
+                                </h3>
+                            </div>
+                            <div class="retry-img-p-div">
+                                <p class="p-3 p-system-green">
+                                    This function gets called when the first rescrape fails, leading to 2 more attempts before returning the error message, logging it and skipping over the product. 
+                                </p>
+                                <p class="p-3 p-system-green">
+                                    When I see this happen in the logs I always try out to scrape the product manually to see what has gone wrong, this has led me to finding many edge cases like detecting unavailable products.
+                                </p>
+                            </div>
+                        </div>
+                        <p class="log-snippet">
+                            <code>
+                                2025-08-26 03:03:06 - INFO - User ID: None - Requesting rescrape of product: 32<br>
+                                2025-08-26 03:03:22 - ERROR - User ID: None - Requested rescrape failed, retrying: {'error': 'Failed to scrape product data/alter product data', 'details': 'Page.wait_for_selector: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator(".bPkjPs") to be visible\n'}<br><br>
+                                2025-08-26 03:03:22 - INFO - User ID: None - 1st retry on product: 32<br>
+                                2025-08-26 03:03:22 - INFO - User ID: None - Requesting rescrape of product: 32<br>
+                                2025-08-26 03:03:39 - INFO - User ID: None - Requested product successfully rescraped: {'name': 'MSI MAG 271QPX QD-OLED E2 - 27 inch - 2560 x 1440 (Quad HD) - 0.03 ms - 240 Hz', 'currentPrice': '559.00', 'ogPrice': '699.00'}<br>
+                            </code>
+                        </p>
+                        <p class="p-3 p-system-green">
+                            In this snippet taken straight out of my logs, the scrape failed waiting for class '<b>.bPkjPs</b>' to be visible, I use this class to detect if the page has loaded because the class is used 10+ times on any Mediamarkt product page. 
+                            Due to this I can assume the page took too long to load so my scraper returned a timeout, and on the first retry it successfully returned the product data, 
+                            definitively meaning it was a connectivity error and not a code error.
+                        </p>
+                    </div>
+                    
+                </div>
+                <div class="stage-4-right">
+                    <div class="video-div">
+                        <h1>API in action</h1>
+                        <video class="retry-video" width="800" controls>
+                            <source src="static/videos/retry.mp4">
+                        </video>
+                        <p class="p-3 p-system">
+                            This video showcases the API in action with a manually triggered rescrape.
+                            The window on the left contains a "Test" button which triggers the manual rescrape, this causes the page to freeze, however
+                            in deployment this won't happen due to it being a scheduled task that runs in the background. 
+                        </p>
+                        <p class="p-3 p-system">
+                            the top right window is the htop(system monitor) of my webscraper APIs server
+                            which shows the API being in use, and in the bottom right window you can see the logs of the rescrape in action.
+                        </p>
+                    </div>
+
+                    <div class="proxy-div">
+                        <h1>Rescraping userProducts daily and all other products weekly to save proxy costs</h1>
+                        <p class="p-3 p-system">
+                            When and what to rescrape was a decision that I had to think about a lot. I really want fresh live data, but I also don't want to spend my entire paycheck on a portfolio project, So finding a balance was very important.
+                            I eventually found that balance between keeping costs down and still having semi fresh data. 
+                        </p>
+                        <p class="p-3 p-system">
+                            Because webshops don't update their prices every 30 minutes, checking once a day is enough and the only data that needs to be up to date is the data
+                            the user is seeing, so my solution was to keep the user facing data fresh on daily basis, and all other data semi fresh on a weekly basis.
+                        </p>
+                        <p class="p-3 p-system-green">
+                            My database has 2 product tables, Products and userProducts, as the names imply the Products table is an overall table and holds every product ever requested, the userProducts table connects the userID(from the Users table)
+                            and the productID(from the Products table). 
+                            <br><br>
+                            The Products table is rescraped weekly on Tuesday at 03:00 CEST to maintain semi fresh data in the entire database 
+                            and because in the future I want to do some data analysis stuff like keeping record of the lowest price seen or creating price graphs for users.
+                            <br><br>
+                            The userProducts table is rescraped daily at 03:00 CEST besides on Tuesdays because that's when the weekly rescrape happens. This design leads to 
+                            very fresh feeling user facing data and keeps the entire database semi fresh while keeping costs at a minimum.
+                        </p>
+                    </div>
+                    <div class="database-div">
+                        <h1>Database Structure</h1>
+                        <div class="database-flex">
+                            <div>
+                                <img class="database-img" src="static/images/db.png">
+                            </div>
+                            <div class="retry-img-p-div">
+                                <p class="p-3 p-system-green">
+                                    The database is made up of 3 tables: <code>users</code>, <code>products</code> and <code>userProducts</code>. <code>userProducts</code> is a junction table that links users to the products they want to track using <code>userID</code> 
+                                    and <code>productID</code>. 
+                                </p>
+                                <p class="p-3 p-system-green">
+                                    This design keeps the database simple while also allowing for multiple users to track the same product, which saves database space and API usage.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="break-border2">
+                    <div class="border-break3">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", (event) => {
+        gsap.registerPlugin(ScrollTrigger)
+
+        const background = gsap.timeline()
+
+        background.to("body", {backgroundColor: "#76AB85"})
+            .to("body", {backgroundColor: "#3E6549"})
+            .to("body", {backgroundColor: "#09110C"})
+
+        ScrollTrigger.create({
+            trigger: "#section-wrapper",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true,
+            animation: background
+        });
+    });
+
+    document.querySelector('.expand-div').addEventListener('click', () => {
+        document.querySelector('.drawer-div').classList.toggle('closed');
+        document.querySelector('.expand-arrow').classList.toggle('closed');
+    });
+
+    document.querySelector('.lanbtn-NL').addEventListener('click', () => {
+        console.log("test")
+        window.location.href="./index.html";
+    });
+
+    document.querySelector('.lanbtn-EN').addEventListener('click', () => {
+        console.log("Test")
+        window.location.href="./index-en.html";
+    });
+</script>
